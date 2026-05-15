@@ -42,23 +42,14 @@ export default function SoundRipples({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
 
-    // Cache parent rect via ResizeObserver — avoid getBoundingClientRect in rAF
-    const updateParentRect = () => {
-      const parent = canvas.parentElement
-      if (parent) {
-        const rect = parent.getBoundingClientRect()
-      }
-    }
-
+    // ResizeObserver — update canvas when parent size changes
     const observer = new ResizeObserver(() => {
       resizeCanvas()
-      updateParentRect()
     })
     if (canvas.parentElement) {
       observer.observe(canvas.parentElement)
     }
     resizeCanvas()
-    updateParentRect()
 
     // BPM → timing
     const beatDuration = 60000 / bpm  // ms per beat
