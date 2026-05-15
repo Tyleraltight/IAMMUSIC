@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import { albums as defaultAlbums } from './data/albums'
+import { albums as defaultAlbums, resolveAlbumUrls } from './data/albums'
 import type { Album } from './data/albums'
+import { API_BASE } from './api/musicApi'
 import NavHeader from './components/NavHeader'
 import AlbumGrid from './components/AlbumGrid'
 import PlayerView from './components/PlayerView'
@@ -19,7 +20,7 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [studioOpen, setStudioOpen] = useState(false)
 
-  const allAlbums = [...defaultAlbums, ...extraAlbums]
+  const allAlbums = [...resolveAlbumUrls(defaultAlbums, API_BASE), ...extraAlbums]
 
   const handleSelect = useCallback((album: Album) => {
     setSelectedAlbum(album)

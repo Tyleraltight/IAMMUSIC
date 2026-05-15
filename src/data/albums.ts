@@ -557,3 +557,17 @@ export const albums: Album[] = [
     bpm: 78,
   },
 ]
+
+/**
+ * Prefix /api/ paths with the backend base URL.
+ * In dev the Vite proxy handles /api, so API_BASE is ''.
+ * In production (GitHub Pages) it points to the deployed backend.
+ */
+export function resolveAlbumUrls(rawAlbums: Album[], apiBase: string): Album[] {
+  if (!apiBase) return rawAlbums
+  return rawAlbums.map(a => ({
+    ...a,
+    cover: a.cover.startsWith('/api/') ? apiBase + a.cover : a.cover,
+    audio: a.audio.startsWith('/api/') ? apiBase + a.audio : a.audio,
+  }))
+}
