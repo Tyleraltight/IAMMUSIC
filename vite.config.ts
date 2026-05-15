@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => ({
   // GitHub Pages serves from /IAMMUSIC/, local dev uses /
   base: mode === 'production' ? '/IAMMUSIC/' : '/',
   plugins: [
-    react({ fastRefresh: false }),
+    react(),
     tailwindcss(),
   ],
   define: {

@@ -19,7 +19,6 @@ export default function SoundRipples({
   isPlaying,
   vinylSize,
   bpm = 100,
-  vinylElRef,
 }: SoundRipplesProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const rafRef = useRef<number>(0)
@@ -44,14 +43,10 @@ export default function SoundRipples({
     }
 
     // Cache parent rect via ResizeObserver — avoid getBoundingClientRect in rAF
-    let parentWidth = 0
-    let parentHeight = 0
     const updateParentRect = () => {
       const parent = canvas.parentElement
       if (parent) {
         const rect = parent.getBoundingClientRect()
-        parentWidth = rect.width
-        parentHeight = rect.height
       }
     }
 
@@ -78,7 +73,7 @@ export default function SoundRipples({
     let smoothBassEnergy = 0
     const beatIntervals: number[] = []
 
-    const draw = (timestamp: number) => {
+    const draw = (_timestamp: number) => {
       const w = canvas.width / (window.devicePixelRatio || 1)
       const h = canvas.height / (window.devicePixelRatio || 1)
       const centerX = w / 2
