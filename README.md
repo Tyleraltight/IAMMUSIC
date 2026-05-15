@@ -1,73 +1,98 @@
-# React + TypeScript + Vite
+# IAMMUSIC
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A vinyl record-themed web music player. 60 records are arranged in a 3D perspective gallery — click any one to play. The spin speed and ripple effects adapt to each song's BPM.
 
-Currently, two official plugins are available:
+![Record gallery](screenshots/gallery.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## What it looks like
 
-## React Compiler
+**Gallery** — Records fan out like a deck of cards in perspective. Scroll to browse, each with its own album cover.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+![Player](screenshots/player.png)
 
-## Expanding the ESLint configuration
+**Player** — Click a record to enter the player view. The album cover sits inside a spinning vinyl disc, with beat-synced ripple rings radiating outward.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+![Search](screenshots/search.png)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+**Search** — Hit SEARCH in the top-left to search for any song on NetEase Cloud Music and stream it instantly.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Features
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- **3D record gallery** — Perspective fan layout with depth changes on scroll
+- **Live streaming** — No downloads needed, streams directly from NetEase Cloud Music
+- **BPM-driven** — Record spin speed and ripple frequency match the song's tempo
+- **Search** — Built-in search bar, powered by NetEase
+- **Playback modes** — Sequential / Shuffle / Loop, toggle from the bottom-right button
+- **Prev / Next** — Arrow keys or on-screen buttons
+- **Studio page** — Contact info showcase
+
+## Tech stack
+
+| Layer | What's used |
+|---|---|
+| Frontend | React + TypeScript + Tailwind CSS |
+| Backend | FastAPI (Python) |
+| Music source | NetEase Cloud Music (via musicdl) |
+| Animation | requestAnimationFrame + CSS |
+| Audio analysis | Web Audio API (beat detection) |
+
+## Getting started
+
+### Prerequisites
+
+- Node.js 18+
+- Python 3.10+
+- pip
+
+### 1. Start the backend
+
+```bash
+cd backend
+pip install -r requirements.txt
+python main.py
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Backend runs on `http://localhost:8000`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 2. Start the frontend
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
+pnpm dev
 ```
+
+Frontend runs on `http://localhost:5173`.
+
+Open your browser and go to `http://localhost:5173`.
+
+## Project structure
+
+```
+vinyl-player/
+├── src/
+│   ├── App.tsx              # Main routing & state
+│   ├── components/
+│   │   ├── AlbumGrid.tsx    # 3D record gallery
+│   │   ├── AlbumCard.tsx    # Single record card
+│   │   ├── PlayerView.tsx   # Player view
+│   │   ├── VinylDisc.tsx    # Spinning vinyl animation
+│   │   ├── SoundRipples.tsx # Beat-synced ripple rings
+│   │   ├── PlaybackControls.tsx  # Playback controls
+│   │   ├── PlaybackMode.tsx     # Mode toggle
+│   │   ├── SearchBar.tsx    # Search
+│   │   ├── NavHeader.tsx    # Top navigation
+│   │   └── StudioPage.tsx   # Contact info page
+│   ├── data/
+│   │   └── albums.ts        # 60 record entries
+│   └── hooks/
+│       └── useAudioPlayer.ts # Audio playback logic
+├── backend/
+│   ├── main.py              # FastAPI server
+│   └── musicdl_service.py   # NetEase search & stream proxy
+└── public/
+    └── covers/              # Local album covers
+```
+
+## Author
+
+**Tyler** — [GitHub](https://github.com/Tyleraltight) · [Email](mailto:chuzihang456@gmail.com)
