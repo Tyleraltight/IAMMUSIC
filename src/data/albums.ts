@@ -11,15 +11,6 @@ export interface Album {
 export const albums: Album[] = [
   // ── Original 12 albums (local audio files) ─────────────────────────
   {
-    id: '1',
-    title: 'Brat',
-    artist: 'Charli XCX',
-    cover: '/covers/album-1.jpg',
-    audio: '/audio/track-1.m4a',
-    gradient: 'linear-gradient(135deg, #8ACE00 0%, #6ba800 50%, #4d7a00 100%)',
-    bpm: 137,
-  },
-  {
     id: '2',
     title: 'Random Access Memories',
     artist: 'Daft Punk',
@@ -27,6 +18,15 @@ export const albums: Album[] = [
     audio: '/audio/track-2.m4a',
     gradient: 'linear-gradient(135deg, #e8b86d 0%, #c4956a 50%, #8b6f47 100%)',
     bpm: 118,
+  },
+  {
+    id: '1',
+    title: '360',
+    artist: 'Charli XCX',
+    cover: '/covers/album-1.jpg',
+    audio: '/audio/track-1.m4a',
+    gradient: 'linear-gradient(135deg, #e8c8b8 0%, #d4a898 50%, #b88878 100%)',
+    bpm: 137,
   },
   {
     id: '3',
