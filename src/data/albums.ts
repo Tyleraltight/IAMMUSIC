@@ -9,13 +9,13 @@ export interface Album {
 }
 
 export const albums: Album[] = [
-  // ── Original 12 albums (local audio files) ─────────────────────────
+  // ── Original 12 albums (NetEase streaming) ─────────────────────────
   {
     id: '2',
-    title: 'Random Access Memories',
+    title: 'Get Lucky',
     artist: 'Daft Punk',
-    cover: '/covers/album-2.jpg',
-    audio: '/audio/track-2.m4a',
+    cover: '/api/cover?url=https%3A%2F%2Fapi.qijieya.cn%2Fmeting%2F%3Fserver%3Dnetease%26type%3Dpic%26id%3D6666339000112923',
+    audio: '/api/song/27522491',
     gradient: 'linear-gradient(135deg, #e8b86d 0%, #c4956a 50%, #8b6f47 100%)',
     bpm: 118,
   },
@@ -23,8 +23,8 @@ export const albums: Album[] = [
     id: '1',
     title: '360',
     artist: 'Charli XCX',
-    cover: '/covers/album-1.jpg',
-    audio: '/audio/track-1.m4a',
+    cover: '/api/cover?url=https%3A%2F%2Fapi.qijieya.cn%2Fmeting%2F%3Fserver%3Dnetease%26type%3Dpic%26id%3D109951171954771934',
+    audio: '/api/song/2163845903',
     gradient: 'linear-gradient(135deg, #e8c8b8 0%, #d4a898 50%, #b88878 100%)',
     bpm: 137,
   },
@@ -32,89 +32,89 @@ export const albums: Album[] = [
     id: '3',
     title: 'Moon River',
     artist: 'Frank Ocean',
-    cover: '/covers/album-3.jpg',
-    audio: '/audio/track-3.m4a',
+    cover: '/api/cover?url=https%3A%2F%2Fapi.qijieya.cn%2Fmeting%2F%3Fserver%3Dnetease%26type%3Dpic%26id%3D109951163150077708',
+    audio: '/api/song/537854031',
     gradient: 'linear-gradient(135deg, #2d1b3d 0%, #4a2c5e 50%, #6b3a7d 100%)',
     bpm: 78,
   },
   {
     id: '4',
-    title: 'OK Computer',
+    title: 'Karma Police',
     artist: 'Radiohead',
-    cover: '/covers/album-4.jpg',
-    audio: '/audio/track-4.m4a',
+    cover: '/api/cover?url=https%3A%2F%2Fapi.qijieya.cn%2Fmeting%2F%3Fserver%3Dnetease%26type%3Dpic%26id%3D16582834370775137',
+    audio: '/api/song/22497475',
     gradient: 'linear-gradient(135deg, #0a3d62 0%, #1e6f8a 50%, #3ca2a2 100%)',
     bpm: 95,
   },
   {
     id: '5',
-    title: 'TYLA',
+    title: 'Water',
     artist: 'Tyla',
-    cover: '/covers/album-5.jpg',
-    audio: '/audio/track-5.m4a',
+    cover: '/api/cover?url=https%3A%2F%2Fapi.qijieya.cn%2Fmeting%2F%3Fserver%3Dnetease%26type%3Dpic%26id%3D109951168763203195',
+    audio: '/api/song/2066953372',
     gradient: 'linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #e91e63 100%)',
     bpm: 107,
   },
   {
     id: '6',
-    title: 'My Beautiful Dark Twisted Fantasy',
+    title: 'Runaway',
     artist: 'Kanye West',
-    cover: '/covers/album-6.jpg',
-    audio: '/audio/track-6.m4a',
+    cover: '/api/cover?url=https%3A%2F%2Fapi.qijieya.cn%2Fmeting%2F%3Fserver%3Dnetease%26type%3Dpic%26id%3D109951166027217441',
+    audio: '/api/song/18969210',
     gradient: 'linear-gradient(135deg, #212121 0%, #424242 50%, #616161 100%)',
     bpm: 82,
   },
   {
     id: '7',
-    title: 'The Slow Rush',
+    title: 'Let It Happen',
     artist: 'Tame Impala',
-    cover: '/covers/album-7.jpg',
-    audio: '/audio/track-7.m4a',
+    cover: '/api/cover?url=https%3A%2F%2Fapi.qijieya.cn%2Fmeting%2F%3Fserver%3Dnetease%26type%3Dpic%26id%3D109951166270713524',
+    audio: '/api/song/33004493',
     gradient: 'linear-gradient(135deg, #d4a574 0%, #c49b6f 50%, #8b6914 100%)',
     bpm: 116,
   },
   {
     id: '8',
-    title: 'DAMN.',
+    title: 'HUMBLE.',
     artist: 'Kendrick Lamar',
-    cover: '/covers/album-8.jpg',
-    audio: '/audio/track-8.m4a',
+    cover: '/api/cover?url=https%3A%2F%2Fapi.qijieya.cn%2Fmeting%2F%3Fserver%3Dnetease%26type%3Dpic%26id%3D18560855790342963',
+    audio: '/api/song/469104548',
     gradient: 'linear-gradient(135deg, #0d1b2a 0%, #1b2838 30%, #2d6a4f 60%, #52b788 100%)',
     bpm: 75,
   },
   {
     id: '9',
-    title: 'When We All Fall Asleep',
+    title: 'bad guy',
     artist: 'Billie Eilish',
-    cover: '/covers/album-9.jpg',
-    audio: '/audio/track-9.m4a',
+    cover: '/api/cover?url=https%3A%2F%2Fapi.qijieya.cn%2Fmeting%2F%3Fserver%3Dnetease%26type%3Dpic%26id%3D109951169009496980',
+    audio: '/api/song/1355147933',
     gradient: 'linear-gradient(135deg, #607d8b 0%, #78909c 50%, #90a4ae 100%)',
     bpm: 65,
   },
   {
     id: '10',
-    title: 'After Hours',
+    title: 'Blinding Lights',
     artist: 'The Weeknd',
-    cover: '/covers/album-10.jpg',
-    audio: '/audio/track-10.m4a',
+    cover: '/api/cover?url=https%3A%2F%2Fapi.qijieya.cn%2Fmeting%2F%3Fserver%3Dnetease%26type%3Dpic%26id%3D109951165370121751',
+    audio: '/api/song/1406633327',
     gradient: 'linear-gradient(135deg, #ffcccc 0%, #ffb3b3 30%, #ff8080 60%, #cc4466 100%)',
     bpm: 100,
   },
   {
     id: '11',
-    title: 'AM',
+    title: 'Do I Wanna Know',
     artist: 'Arctic Monkeys',
-    cover: '/covers/album-11.jpg',
-    audio: '/audio/track-11.m4a',
+    cover: '/api/cover?url=https%3A%2F%2Fapi.qijieya.cn%2Fmeting%2F%3Fserver%3Dnetease%26type%3Dpic%26id%3D109951163990460297',
+    audio: '/api/song/26544275',
     gradient: 'linear-gradient(135deg, #0b0c10 0%, #1f2833 40%, #45a29e 80%, #66fcf1 100%)',
     bpm: 85,
   },
   {
     id: '12',
-    title: 'SOS',
+    title: 'Kill Bill',
     artist: 'SZA',
-    cover: '/covers/album-12.jpg',
-    audio: '/audio/track-12.m4a',
+    cover: '/api/cover?url=https%3A%2F%2Fapi.qijieya.cn%2Fmeting%2F%3Fserver%3Dnetease%26type%3Dpic%26id%3D109951168121859537',
+    audio: '/api/song/2004562490',
     gradient: 'linear-gradient(135deg, #8b4513 0%, #cd853f 40%, #daa520 70%, #f0e68c 100%)',
     bpm: 78,
   },
@@ -562,12 +562,23 @@ export const albums: Album[] = [
  * Prefix /api/ paths with the backend base URL.
  * In dev the Vite proxy handles /api, so API_BASE is ''.
  * In production (GitHub Pages) it points to the deployed backend.
+ *
+ * Also converts local /covers/ paths to /api/local-cover in production
+ * so that cover images load from the backend when GitHub Pages can't serve them.
  */
 export function resolveAlbumUrls(rawAlbums: Album[], apiBase: string): Album[] {
   if (!apiBase) return rawAlbums
-  return rawAlbums.map(a => ({
-    ...a,
-    cover: a.cover.startsWith('/api/') ? apiBase + a.cover : a.cover,
-    audio: a.audio.startsWith('/api/') ? apiBase + a.audio : a.audio,
-  }))
+  return rawAlbums.map(a => {
+    let cover = a.cover
+    // Convert local /covers/xx.jpg → /api/local-cover?name=xx.jpg in production
+    if (cover.startsWith('/covers/')) {
+      const fileName = cover.replace('/covers/', '')
+      cover = `/api/local-cover?name=${encodeURIComponent(fileName)}`
+    }
+    return {
+      ...a,
+      cover: cover.startsWith('/api/') ? apiBase + cover : cover,
+      audio: a.audio.startsWith('/api/') ? apiBase + a.audio : a.audio,
+    }
+  })
 }

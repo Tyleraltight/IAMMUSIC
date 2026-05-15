@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import asyncio
 from contextlib import asynccontextmanager
+from pathlib import Path
 from urllib.parse import unquote
 
 import httpx
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 
 from musicdl_service import service  # FastMusicService — no more musicdl
 
@@ -188,6 +189,21 @@ async def proxy_cover(url: str = Query(..., description="Remote cover image URL"
         media_type=content_type,
         headers=headers,
     )
+
+
+# Path to the frontend's public/covers directory
+_COVERS_DIR = Path(__file__).resolve().parent.parent / "public" / "covers"
+
+
+@app.get("/api/local-cover")
+async def serve_local_cover(name: str = Query(..., description="Cover filename e.g. album-2.jpg")):
+    """Serve a local cover image from public/covers/."""
+    # Prevent path traversal
+    safe_name = Path(name).name
+    cover_path = _COVERS_DIR / safe_name
+    if not cover_path.is_file():
+        raise HTTPException(404, f"Cover not found: {safe_name}")
+    return FileResponse(cover_path, media_type="image/jpeg", cache_control="public, max-age=86400")
 
 
 @app.get("/api/sources")
