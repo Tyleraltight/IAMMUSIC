@@ -28,6 +28,7 @@ jobs:
           node-version: 20
           cache: pnpm
 
+      - run: rm -rf node_modules dist
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
         env:
