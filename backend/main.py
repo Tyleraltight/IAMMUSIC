@@ -193,17 +193,46 @@ async def proxy_cover(url: str = Query(..., description="Remote cover image URL"
 
 # Path to the frontend's public/covers directory
 _COVERS_DIR = Path(__file__).resolve().parent.parent / "public" / "covers"
+_GH_PAGES_BASE = "https://tyleraltight.github.io/IAMMUSIC/covers"
 
 
 @app.get("/api/local-cover")
 async def serve_local_cover(name: str = Query(..., description="Cover filename e.g. album-2.jpg")):
-    """Serve a local cover image from public/covers/."""
-    # Prevent path traversal
+    """Serve a cover image — tries local disk first, falls back to GitHub Pages."""
     safe_name = Path(name).name
     cover_path = _COVERS_DIR / safe_name
-    if not cover_path.is_file():
+
+    # Try local disk first (works in dev)
+    if cover_path.is_file():
+        return FileResponse(cover_path, media_type="image/jpeg", cache_control="public, max-age=86400")
+
+    # Fallback: fetch from GitHub Pages (works on Render)
+    client = _get_client()
+    try:
+        resp = await client.send(
+            client.build_request("GET", f"{_GH_PAGES_BASE}/{safe_name}"),
+            stream=True,
+        )
+    except httpx.HTTPError as exc:
+        raise HTTPException(502, f"Failed to fetch cover: {exc}") from exc
+
+    if resp.status_code >= 400:
+        await resp.aclose()
         raise HTTPException(404, f"Cover not found: {safe_name}")
-    return FileResponse(cover_path, media_type="image/jpeg", cache_control="public, max-age=86400")
+
+    async def stream_chunks():
+        try:
+            async for chunk in resp.aiter_bytes(chunk_size=65_536):
+                yield chunk
+        finally:
+            await resp.aclose()
+
+    return StreamingResponse(
+        stream_chunks(),
+        status_code=200,
+        media_type="image/jpeg",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
 
 
 @app.get("/api/sources")
