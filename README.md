@@ -96,3 +96,4 @@ vinyl-player/
 ## Author
 
 **Tyler** — [GitHub](https://github.com/Tyleraltight) · [Email](mailto:chuzihang456@gmail.com)
+
