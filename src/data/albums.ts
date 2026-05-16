@@ -568,12 +568,16 @@ export const albums: Album[] = [
  */
 export function resolveAlbumUrls(rawAlbums: Album[], apiBase: string): Album[] {
   if (!apiBase) return rawAlbums
+  const base = import.meta.env.BASE_URL || '/'
   return rawAlbums.map(a => {
     return {
       ...a,
-      // Only proxy /api/ paths through the backend; local /covers/ files
-      // are served directly by GitHub Pages and should NOT be redirected.
-      cover: a.cover.startsWith('/api/') ? apiBase + a.cover : a.cover,
+      // Local /covers/ files are on GitHub Pages but the absolute path needs the base prefix
+      cover: a.cover.startsWith('/covers/')
+        ? base + a.cover.slice(1) // /IAMMUSIC/covers/album-1.jpg
+        : a.cover.startsWith('/api/')
+          ? apiBase + a.cover
+          : a.cover,
       audio: a.audio.startsWith('/api/') ? apiBase + a.audio : a.audio,
     }
   })
