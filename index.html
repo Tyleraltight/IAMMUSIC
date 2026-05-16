@@ -14,178 +14,270 @@
     </script>
   </head>
   <body>
-    <!-- Loading Screen: CSS-only vinyl + needle animation -->
+    <!-- Loading Screen: cinematic vinyl + tonearm -->
     <div id="loading-screen">
-      <div class="loading-vinyl-wrap">
-        <!-- Tonearm -->
-        <div class="loading-tonearm">
-          <div class="loading-arm-base"></div>
-          <div class="loading-arm-shaft"></div>
-          <div class="loading-arm-head"></div>
+      <!-- Ambient background glow -->
+      <div class="ls-ambient"></div>
+
+      <div class="ls-stage">
+        <!-- Tonearm assembly -->
+        <div class="ls-arm">
+          <div class="ls-arm-pivot"></div>
+          <div class="ls-arm-bar"></div>
+          <div class="ls-arm-headshell"></div>
+          <div class="ls-arm-stylus"></div>
         </div>
-        <!-- Vinyl Record -->
-        <div class="loading-vinyl">
-          <div class="loading-groove loading-groove-1"></div>
-          <div class="loading-groove loading-groove-2"></div>
-          <div class="loading-groove loading-groove-3"></div>
-          <div class="loading-groove loading-groove-4"></div>
-          <div class="loading-groove loading-groove-5"></div>
-          <div class="loading-label">
-            <div class="loading-label-hole"></div>
+        <!-- Vinyl disc -->
+        <div class="ls-disc">
+          <!-- Light reflection sweep -->
+          <div class="ls-reflection"></div>
+          <!-- Center label -->
+          <div class="ls-label">
+            <div class="ls-spindle"></div>
           </div>
         </div>
       </div>
-      <div class="loading-text">
-        <span class="loading-title">IAMMUSIC</span>
-        <span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+
+      <!-- Brand mark -->
+      <div class="ls-brand">
+        <span class="ls-name">IAMMUSIC</span>
+        <span class="ls-separator"></span>
+        <span class="ls-status">loading</span>
       </div>
     </div>
     <style>
-      /* === LOADING SCREEN === */
+      /* === LOADING SCREEN — cinematic === */
+      @keyframes ls-spin      { to { transform: translate(-50%,-50%) rotate(360deg); } }
+      @keyframes ls-arm-drop  {
+        0%   { transform: rotate(-28deg); }
+        55%  { transform: rotate(3deg); }
+        75%  { transform: rotate(-1.5deg); }
+        100% { transform: rotate(0deg); }
+      }
+      @keyframes ls-shine {
+        0%   { transform: translate(-50%,-50%) rotate(-30deg); opacity: 0; }
+        20%  { opacity: 1; }
+        100% { transform: translate(-50%,-50%) rotate(330deg); opacity: 0; }
+      }
+      @keyframes ls-fade-in  { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes ls-pulse    { 0%,100% { opacity: .35; } 50% { opacity: .85; } }
+
       #loading-screen {
         position: fixed;
         inset: 0;
         z-index: 99999;
-        background: #F5F5F5;
+        background: var(--color-bg, #F5F5F5);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        transition: opacity 0.6s ease, visibility 0.6s ease;
+        overflow: hidden;
+        transition: opacity 0.8s cubic-bezier(.4,0,.2,1), visibility 0.8s;
       }
       #loading-screen.fade-out {
         opacity: 0;
         visibility: hidden;
+        pointer-events: none;
       }
-      .loading-vinyl-wrap {
+
+      /* Subtle radial ambient light behind the disc */
+      .ls-ambient {
+        position: absolute;
+        width: 500px; height: 500px;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -60%);
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(253,191,247,.12) 0%, rgba(253,191,247,.04) 40%, transparent 70%);
+        pointer-events: none;
+      }
+
+      .ls-stage {
         position: relative;
-        width: 200px;
-        height: 200px;
+        width: 280px;
+        height: 280px;
       }
-      /* Vinyl Record */
-      .loading-vinyl {
-        width: 180px;
-        height: 180px;
-        border-radius: 50%;
-        background: #1A1A1A;
+
+      /* ---- VINYL DISC ---- */
+      .ls-disc {
         position: absolute;
-        bottom: 0;
-        left: 0;
-        animation: vinyl-spin 2s linear infinite;
+        width: 240px; height: 240px;
+        top: 50%; left: 50%;
+        transform: translate(-50%,-50%);
+        border-radius: 50%;
+        /* Realistic vinyl: near-black with subtle radial sheen */
+        background:
+          radial-gradient(circle at 50% 50%,
+            #1a1a1a 0%,
+            #161616 20%,
+            #121212 40%,
+            #111 60%,
+            #121212 80%,
+            #161616 100%
+          );
         box-shadow:
-          inset 0 0 0 2px rgba(255,255,255,0.06),
-          inset 0 0 0 4px rgba(255,255,255,0.03),
-          0 4px 30px rgba(0,0,0,0.12);
+          0 0 0 1px rgba(0,0,0,.06),
+          0 8px 40px rgba(0,0,0,.12),
+          0 20px 80px rgba(0,0,0,.08),
+          inset 0 0 40px rgba(0,0,0,.5);
+        animation: ls-spin 3.2s linear infinite;
+        /* Groove effect via conic gradient */
+        -webkit-mask-image: radial-gradient(circle, transparent 22%, black 22.5%);
+        mask-image: radial-gradient(circle, transparent 22%, black 22.5%);
       }
-      /* Grooves */
-      .loading-groove {
+      /* Grooves: subtle concentric lines via box-shadow rings */
+      .ls-disc::before {
+        content: '';
         position: absolute;
+        inset: 0;
         border-radius: 50%;
-        border: 1px solid rgba(255,255,255,0.07);
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
+        background:
+          repeating-radial-gradient(
+            circle at 50% 50%,
+            transparent 0px,
+            transparent 3px,
+            rgba(255,255,255,.018) 3px,
+            rgba(255,255,255,.018) 4px
+          );
+        pointer-events: none;
       }
-      .loading-groove-1 { width: 160px; height: 160px; }
-      .loading-groove-2 { width: 136px; height: 136px; }
-      .loading-groove-3 { width: 112px; height: 112px; }
-      .loading-groove-4 { width: 88px;  height: 88px; }
-      .loading-groove-5 { width: 64px;  height: 64px; }
-      /* Center Label */
-      .loading-label {
+      /* Rotating highlight reflection */
+      .ls-reflection {
         position: absolute;
-        width: 52px;
-        height: 52px;
-        border-radius: 50%;
-        background: #FDBFF7;
+        width: 100%; height: 100%;
         top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%,-50%);
+        border-radius: 50%;
+        background: conic-gradient(
+          from 0deg at 50% 50%,
+          transparent 0deg,
+          rgba(255,255,255,.06) 15deg,
+          rgba(255,255,255,.12) 25deg,
+          rgba(255,255,255,.06) 35deg,
+          transparent 60deg,
+          transparent 360deg
+        );
+        animation: ls-shine 4s ease-in-out infinite;
+        pointer-events: none;
+      }
+
+      /* ---- CENTER LABEL ---- */
+      .ls-label {
+        position: absolute;
+        width: 46px; height: 46px;
+        top: 50%; left: 50%;
+        transform: translate(-50%,-50%);
+        border-radius: 50%;
+        background: linear-gradient(145deg, #FDBFF7 0%, #f0a0e0 100%);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.3);
         display: flex;
         align-items: center;
         justify-content: center;
       }
-      .loading-label-hole {
-        width: 8px;
-        height: 8px;
+      .ls-spindle {
+        width: 6px; height: 6px;
         border-radius: 50%;
-        background: #1A1A1A;
+        background: var(--color-bg, #F5F5F5);
+        box-shadow: 0 0 0 1px rgba(0,0,0,.1), 0 0 6px rgba(255,255,0,.15);
       }
-      /* Tonearm */
-      .loading-tonearm {
+
+      /* ---- TONEARM ---- */
+      .ls-arm {
         position: absolute;
-        top: 0;
-        right: 0;
-        width: 80px;
-        height: 100px;
-        z-index: 2;
-        transform-origin: top right;
-        animation: arm-drop 1.5s ease-out 0.5s both;
+        top: 10px;
+        right: 5px;
+        width: 120px;
+        height: 160px;
+        z-index: 3;
+        transform-origin: 106px 16px;
+        animation: ls-arm-drop 1.8s cubic-bezier(.22,.68,.35,1) 0.6s both;
       }
-      .loading-arm-base {
+      /* Pivot bearing */
+      .ls-arm-pivot {
         position: absolute;
-        top: 0;
-        right: 0;
-        width: 14px;
-        height: 14px;
+        top: 6px; right: 0;
+        width: 20px; height: 20px;
         border-radius: 50%;
-        background: #4A4A4A;
+        background: linear-gradient(135deg, #4A4A4A 0%, #333 100%);
+        box-shadow:
+          0 0 0 1.5px rgba(0,0,0,.08),
+          0 2px 8px rgba(0,0,0,.15),
+          inset 0 1px 2px rgba(255,255,255,.12);
         z-index: 2;
       }
-      .loading-arm-shaft {
+      /* Arm shaft */
+      .ls-arm-bar {
         position: absolute;
-        top: 7px;
-        right: 7px;
-        width: 85px;
-        height: 2.5px;
-        background: #4A4A4A;
+        top: 15px;
+        right: 10px;
+        width: 105px;
+        height: 2px;
+        background: linear-gradient(90deg, #4A4A4A, #5a5a5a, #4A4A4A);
         transform-origin: right center;
-        transform: rotate(-35deg);
+        transform: rotate(-32deg);
         border-radius: 1px;
+        box-shadow: 0 1px 3px rgba(0,0,0,.12);
       }
-      .loading-arm-head {
+      /* Headshell */
+      .ls-arm-headshell {
         position: absolute;
-        bottom: 8px;
-        left: -2px;
-        width: 8px;
-        height: 12px;
-        background: #1A1A1A;
-        border-radius: 0 0 2px 2px;
+        bottom: 26px; left: 2px;
+        width: 10px; height: 16px;
+        background: linear-gradient(180deg, #555 0%, #3a3a3a 100%);
+        border-radius: 2px 2px 1px 1px;
+        box-shadow: 0 1px 4px rgba(0,0,0,.1);
       }
-      /* Text */
-      .loading-text {
-        margin-top: 40px;
+      /* Stylus needle tip */
+      .ls-arm-stylus {
+        position: absolute;
+        bottom: 18px; left: 5px;
+        width: 1.5px; height: 10px;
+        background: linear-gradient(180deg, #888, #aaa, #ccc);
+        border-radius: 0 0 0.5px 0.5px;
+      }
+
+      /* ---- BRAND MARK ---- */
+      .ls-brand {
+        margin-top: 48px;
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 12px;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        animation: ls-fade-in 1s ease 1s both;
       }
-      .loading-title {
-        font-size: 14px;
-        font-weight: 500;
-        letter-spacing: 0.3em;
-        color: #1A1A1A;
+      .ls-name {
+        font-size: 13px;
+        font-weight: 300;
+        letter-spacing: 0.45em;
+        color: var(--color-text, #1A1A1A);
         text-transform: uppercase;
+        opacity: .55;
       }
-      .loading-dots span {
-        font-size: 14px;
-        color: #4A4A4A;
-        animation: dot-pulse 1.4s ease-in-out infinite;
+      .ls-separator {
+        width: 1px;
+        height: 12px;
+        background: var(--color-border, rgba(0,0,0,.12));
       }
-      .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-      .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-      /* Animations */
-      @keyframes vinyl-spin {
-        from { transform: rotate(0deg); }
-        to   { transform: rotate(360deg); }
+      .ls-status {
+        font-size: 10px;
+        font-weight: 400;
+        letter-spacing: 0.2em;
+        color: var(--color-text, #1A1A1A);
+        opacity: .25;
+        text-transform: lowercase;
+        animation: ls-pulse 2.5s ease-in-out infinite;
       }
-      @keyframes arm-drop {
-        0%   { transform: rotate(-30deg); }
-        60%  { transform: rotate(2deg); }
-        80%  { transform: rotate(-1deg); }
-        100% { transform: rotate(0deg); }
-      }
-      @keyframes dot-pulse {
-        0%, 60%, 100% { opacity: 0.2; }
-        30%           { opacity: 1; }
+
+      /* Responsive: smaller on mobile */
+      @media (max-width: 480px) {
+        .ls-stage  { width: 200px; height: 200px; }
+        .ls-disc   { width: 170px; height: 170px; }
+        .ls-label  { width: 34px; height: 34px; }
+        .ls-spindle { width: 5px; height: 5px; }
+        .ls-arm    { width: 90px; height: 120px; transform-origin: 78px 12px; }
+        .ls-arm-pivot { width: 16px; height: 16px; }
+        .ls-arm-bar   { width: 80px; }
+        .ls-brand  { margin-top: 36px; }
+        .ls-name   { font-size: 11px; }
       }
     </style>
 

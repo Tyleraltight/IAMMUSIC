@@ -40,6 +40,9 @@ Thumbs.db
 
 # Screenshots
 screenshot-*.png
+gallery.png
+player.png
+search.png
 
 # Audio files (streamed, not local)
 public/audio/
