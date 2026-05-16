@@ -14,6 +14,181 @@
     </script>
   </head>
   <body>
+    <!-- Loading Screen: CSS-only vinyl + needle animation -->
+    <div id="loading-screen">
+      <div class="loading-vinyl-wrap">
+        <!-- Tonearm -->
+        <div class="loading-tonearm">
+          <div class="loading-arm-base"></div>
+          <div class="loading-arm-shaft"></div>
+          <div class="loading-arm-head"></div>
+        </div>
+        <!-- Vinyl Record -->
+        <div class="loading-vinyl">
+          <div class="loading-groove loading-groove-1"></div>
+          <div class="loading-groove loading-groove-2"></div>
+          <div class="loading-groove loading-groove-3"></div>
+          <div class="loading-groove loading-groove-4"></div>
+          <div class="loading-groove loading-groove-5"></div>
+          <div class="loading-label">
+            <div class="loading-label-hole"></div>
+          </div>
+        </div>
+      </div>
+      <div class="loading-text">
+        <span class="loading-title">IAMMUSIC</span>
+        <span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+      </div>
+    </div>
+    <style>
+      /* === LOADING SCREEN === */
+      #loading-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: #F5F5F5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.6s ease, visibility 0.6s ease;
+      }
+      #loading-screen.fade-out {
+        opacity: 0;
+        visibility: hidden;
+      }
+      .loading-vinyl-wrap {
+        position: relative;
+        width: 200px;
+        height: 200px;
+      }
+      /* Vinyl Record */
+      .loading-vinyl {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: #1A1A1A;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        animation: vinyl-spin 2s linear infinite;
+        box-shadow:
+          inset 0 0 0 2px rgba(255,255,255,0.06),
+          inset 0 0 0 4px rgba(255,255,255,0.03),
+          0 4px 30px rgba(0,0,0,0.12);
+      }
+      /* Grooves */
+      .loading-groove {
+        position: absolute;
+        border-radius: 50%;
+        border: 1px solid rgba(255,255,255,0.07);
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .loading-groove-1 { width: 160px; height: 160px; }
+      .loading-groove-2 { width: 136px; height: 136px; }
+      .loading-groove-3 { width: 112px; height: 112px; }
+      .loading-groove-4 { width: 88px;  height: 88px; }
+      .loading-groove-5 { width: 64px;  height: 64px; }
+      /* Center Label */
+      .loading-label {
+        position: absolute;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: #FDBFF7;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .loading-label-hole {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #1A1A1A;
+      }
+      /* Tonearm */
+      .loading-tonearm {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 80px;
+        height: 100px;
+        z-index: 2;
+        transform-origin: top right;
+        animation: arm-drop 1.5s ease-out 0.5s both;
+      }
+      .loading-arm-base {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #4A4A4A;
+        z-index: 2;
+      }
+      .loading-arm-shaft {
+        position: absolute;
+        top: 7px;
+        right: 7px;
+        width: 85px;
+        height: 2.5px;
+        background: #4A4A4A;
+        transform-origin: right center;
+        transform: rotate(-35deg);
+        border-radius: 1px;
+      }
+      .loading-arm-head {
+        position: absolute;
+        bottom: 8px;
+        left: -2px;
+        width: 8px;
+        height: 12px;
+        background: #1A1A1A;
+        border-radius: 0 0 2px 2px;
+      }
+      /* Text */
+      .loading-text {
+        margin-top: 40px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      }
+      .loading-title {
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.3em;
+        color: #1A1A1A;
+        text-transform: uppercase;
+      }
+      .loading-dots span {
+        font-size: 14px;
+        color: #4A4A4A;
+        animation: dot-pulse 1.4s ease-in-out infinite;
+      }
+      .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+      .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+      /* Animations */
+      @keyframes vinyl-spin {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+      }
+      @keyframes arm-drop {
+        0%   { transform: rotate(-30deg); }
+        60%  { transform: rotate(2deg); }
+        80%  { transform: rotate(-1deg); }
+        100% { transform: rotate(0deg); }
+      }
+      @keyframes dot-pulse {
+        0%, 60%, 100% { opacity: 0.2; }
+        30%           { opacity: 1; }
+      }
+    </style>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

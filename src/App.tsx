@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { albums as defaultAlbums, resolveAlbumUrls } from './data/albums'
 import type { Album } from './data/albums'
@@ -10,6 +10,7 @@ import SearchBar from './components/SearchBar'
 import PlaybackMode from './components/PlaybackMode'
 import type { PlayMode } from './components/PlaybackMode'
 import StudioPage from './components/StudioPage'
+import WakeUpNotice from './components/WakeUpNotice'
 
 const MODE_CYCLE: PlayMode[] = ['sequential', 'shuffle', 'loop']
 
@@ -19,6 +20,16 @@ export default function App() {
   const [playbackMode, setPlaybackMode] = useState<PlayMode>('sequential')
   const [searchOpen, setSearchOpen] = useState(false)
   const [studioOpen, setStudioOpen] = useState(false)
+
+  // Fade out the HTML loading screen once React has mounted
+  useEffect(() => {
+    const el = document.getElementById('loading-screen')
+    if (el) {
+      el.classList.add('fade-out')
+      const timer = setTimeout(() => el.remove(), 700)
+      return () => clearTimeout(timer)
+    }
+  }, [])
 
   const allAlbums = [...resolveAlbumUrls(defaultAlbums, API_BASE), ...extraAlbums]
 
@@ -98,6 +109,9 @@ export default function App() {
         onSearch={() => setSearchOpen(true)}
         onStudio={() => setStudioOpen(true)}
       />
+
+      {/* Backend cold-start detection */}
+      <WakeUpNotice />
 
       {/* AlbumGrid stays mounted — avoids remount/re-entry jank */}
       <AlbumGrid

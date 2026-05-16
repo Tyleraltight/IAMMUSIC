@@ -176,14 +176,31 @@ export default function PlayerView({ album, onBack, onPrev, onNext, hasPrev, has
 
       {/* Loading indicator */}
       {isLoading && (
-        <motion.p
-          className="mt-4 opacity-30"
-          style={{ fontSize: '9px', letterSpacing: '0.2em' }}
+        <motion.div
+          className="mt-4 flex items-center gap-2"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.3 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
         >
-          Loading…
-        </motion.p>
+          <div
+            className="w-3 h-3 rounded-full border-2 border-transparent"
+            style={{
+              borderTopColor: 'var(--color-text-muted)',
+              animation: 'player-loading-spin 1s linear infinite',
+            }}
+          />
+          <p
+            className="m-0"
+            style={{ fontSize: '9px', letterSpacing: '0.2em', opacity: 0.4 }}
+          >
+            BUFFERING
+          </p>
+          <style>{`
+            @keyframes player-loading-spin {
+              to { transform: rotate(360deg); }
+            }
+          `}</style>
+        </motion.div>
       )}
 
       {/* Tap to play hint */}
