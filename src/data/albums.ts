@@ -569,15 +569,11 @@ export const albums: Album[] = [
 export function resolveAlbumUrls(rawAlbums: Album[], apiBase: string): Album[] {
   if (!apiBase) return rawAlbums
   return rawAlbums.map(a => {
-    let cover = a.cover
-    // Convert local /covers/xx.jpg → /api/local-cover?name=xx.jpg in production
-    if (cover.startsWith('/covers/')) {
-      const fileName = cover.replace('/covers/', '')
-      cover = `/api/local-cover?name=${encodeURIComponent(fileName)}`
-    }
     return {
       ...a,
-      cover: cover.startsWith('/api/') ? apiBase + cover : cover,
+      // Only proxy /api/ paths through the backend; local /covers/ files
+      // are served directly by GitHub Pages and should NOT be redirected.
+      cover: a.cover.startsWith('/api/') ? apiBase + a.cover : a.cover,
       audio: a.audio.startsWith('/api/') ? apiBase + a.audio : a.audio,
     }
   })
