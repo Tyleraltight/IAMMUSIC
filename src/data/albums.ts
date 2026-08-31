@@ -558,6 +558,19 @@ export const albums: Album[] = [
   },
 ]
 
+// Fisher-Yates shuffle — randomize album order on every page load
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
+// Pre-shuffle once at module load so the grid order is stable within a session
+export const shuffledAlbums = shuffle(albums)
+
 /**
  * Prefix /api/ paths with the backend base URL.
  * In dev the Vite proxy handles /api, so API_BASE is ''.
