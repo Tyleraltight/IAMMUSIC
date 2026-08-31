@@ -47,15 +47,6 @@ export const albums: Album[] = [
     bpm: 95,
   },
   {
-    id: '5',
-    title: 'Water',
-    artist: 'Tyla',
-    cover: '/api/cover?url=https%3A%2F%2Fapi.qijieya.cn%2Fmeting%2F%3Fserver%3Dnetease%26type%3Dpic%26id%3D109951168763203195',
-    audio: '/api/song/2066953372',
-    gradient: 'linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #e91e63 100%)',
-    bpm: 107,
-  },
-  {
     id: '6',
     title: 'Runaway',
     artist: 'Kanye West',
