@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 from contextlib import asynccontextmanager
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
 
 import httpx
 from fastapi import FastAPI, HTTPException, Query, Request
@@ -56,6 +56,34 @@ app.add_middleware(
 # Helpers
 # ---------------------------------------------------------------------------
 
+ALLOWED_PROXY_DOMAINS = {
+    "126.net",
+    "music.126.net",
+    "163.com",
+    "music.163.com",
+    "qijieya.cn",
+    "vkeys.cn",
+    "mzstatic.com",
+    "apple.com",
+    "github.io",
+}
+
+
+def _validate_proxy_url(target_url: str) -> str:
+    parsed = urlparse(target_url)
+    if parsed.scheme not in ("http", "https"):
+        raise HTTPException(400, "Invalid URL scheme: only http and https are permitted")
+    host = (parsed.hostname or "").lower()
+    if not host or host in ("localhost", "127.0.0.1", "::1", "0.0.0.0"):
+        raise HTTPException(403, "Access to local network resources is forbidden")
+    if host.startswith("169.254.") or host.startswith("10.") or host.startswith("192.168."):
+        raise HTTPException(403, "Access to private IP range is forbidden")
+    is_allowed = any(host == d or host.endswith("." + d) for d in ALLOWED_PROXY_DOMAINS)
+    if not is_allowed:
+        raise HTTPException(403, f"Proxying from domain '{host}' is not permitted")
+    return target_url
+
+
 def _get_client() -> httpx.AsyncClient:
     if _http_client is None:
         raise HTTPException(503, "HTTP client not initialised")
@@ -93,6 +121,7 @@ async def stream_audio(request: Request, url: str = Query(..., description="Remo
     element can seek without downloading the entire file first.
     """
     decoded_url = unquote(url)
+    _validate_proxy_url(decoded_url)
     client = _get_client()
 
     # Forward the Range header if the browser sent one
@@ -152,6 +181,7 @@ async def stream_audio(request: Request, url: str = Query(..., description="Remo
 async def proxy_cover(url: str = Query(..., description="Remote cover image URL")):
     """Proxy a remote album-cover image with streaming."""
     decoded_url = unquote(url)
+    _validate_proxy_url(decoded_url)
     client = _get_client()
 
     try:

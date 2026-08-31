@@ -1,6 +1,7 @@
 import { useRef, useEffect, useCallback, useState } from 'react'
 import type { Album } from '../data/albums'
 import AlbumCard from './AlbumCard'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 
 interface AlbumGridProps {
   albums: Album[]
@@ -65,11 +66,14 @@ export default function AlbumGrid({ albums, onSelect, hidden }: AlbumGridProps) 
   const momentumRaf = useRef(0)
   const rafRef = useRef(0)
 
+  const reducedMotion = useReducedMotion()
   const totalCards = albums.length
   const maxIndex = totalCards - 1
 
-  const hiddenRef = useRef(false)
-  hiddenRef.current = !!hidden
+  const hiddenRef = useRef(!!hidden)
+  useEffect(() => {
+    hiddenRef.current = !!hidden
+  }, [hidden])
 
   const registerCard = useCallback((el: HTMLDivElement | null, i: number) => {
     if (el) cardElsRef.current.set(i, el)
@@ -264,7 +268,7 @@ export default function AlbumGrid({ albums, onSelect, hidden }: AlbumGridProps) 
   useEffect(() => {
     const tick = () => {
       // Smooth interpolation
-      if (!isDragging.current) {
+      if (!isDragging.current && !reducedMotion) {
         scrollSmooth.current += (scrollTarget.current - scrollSmooth.current) * 0.08
       } else {
         scrollSmooth.current = scrollTarget.current
@@ -310,7 +314,7 @@ export default function AlbumGrid({ albums, onSelect, hidden }: AlbumGridProps) 
 
     rafRef.current = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(rafRef.current)
-  }, [maxIndex])
+  }, [maxIndex, reducedMotion])
 
   /* ──── Entrance fade (wrapper-level, no per-card transform conflict) ──── */
   const [entered, setEntered] = useState(false)

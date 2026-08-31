@@ -9,13 +9,12 @@ type Status = 'checking' | 'slow' | 'ready'
  * Shows a subtle toast when the backend is waking up.
  */
 export default function WakeUpNotice() {
-  const [status, setStatusRaw] = useState<Status>('checking')
-  const statusRef = useRef<Status>('checking')
+  const [status, setStatusRaw] = useState<Status>(() => (!API_BASE ? 'ready' : 'checking'))
+  const statusRef = useRef<Status>(!API_BASE ? 'ready' : 'checking')
   const setStatus = useCallback((s: Status) => { statusRef.current = s; setStatusRaw(s) }, [])
 
   useEffect(() => {
     if (!API_BASE) {
-      setStatus('ready')
       return
     }
 

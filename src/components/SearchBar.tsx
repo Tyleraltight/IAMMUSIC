@@ -44,13 +44,15 @@ export default function SearchBar({ open, onOpenChange, onAddAlbum }: SearchBarP
     }
   }, [open])
 
-  useEffect(() => {
-    if (!open) {
-      setQuery('')
-      setResults([])
-      setError('')
-    }
-  }, [open])
+  const close = useCallback(() => {
+    clearTimeout(timerRef.current)
+    abortRef.current?.abort()
+    setQuery('')
+    setResults([])
+    setError('')
+    setLoading(false)
+    onOpenChange(false)
+  }, [onOpenChange])
 
   const doSearch = useCallback((q: string) => {
     clearTimeout(timerRef.current)
@@ -81,7 +83,7 @@ export default function SearchBar({ open, onOpenChange, onAddAlbum }: SearchBarP
 
   const handleSelect = (track: TrackResult) => {
     onAddAlbum(trackToAlbum(track))
-    onOpenChange(false)
+    close()
   }
 
   // Keyboard: Escape closes
@@ -90,14 +92,12 @@ export default function SearchBar({ open, onOpenChange, onAddAlbum }: SearchBarP
     const handler = (e: KeyboardEvent) => {
       if (e.code === 'Escape') {
         e.preventDefault()
-        onOpenChange(false)
+        close()
       }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [open, onOpenChange])
-
-  const close = () => onOpenChange(false)
+  }, [open, close])
 
   return (
     <AnimatePresence>

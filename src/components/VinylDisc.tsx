@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 
 interface VinylDiscProps {
   cover: string
@@ -15,12 +16,18 @@ export default function VinylDisc({ cover, gradient, isPlaying, size = 320, alt 
   const rotationRef = useRef(0)
   const lastTimeRef = useRef(0)
   const rafRef = useRef(0)
+  const reducedMotion = useReducedMotion()
 
   const labelSize = size * 0.43
   const degreesPerSec = 360 / spinDuration
 
   // Smooth spin using rAF — no CSS animation jank on prop change
   useEffect(() => {
+    if (reducedMotion) {
+      if (discRef.current) discRef.current.style.transform = 'rotate(0deg)'
+      return
+    }
+
     const tick = (time: number) => {
       if (lastTimeRef.current > 0) {
         const dt = (time - lastTimeRef.current) / 1000
@@ -41,7 +48,7 @@ export default function VinylDisc({ cover, gradient, isPlaying, size = 320, alt 
     }
 
     return () => cancelAnimationFrame(rafRef.current)
-  }, [isPlaying, degreesPerSec])
+  }, [isPlaying, degreesPerSec, reducedMotion])
 
   return (
     <div

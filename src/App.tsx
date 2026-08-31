@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { shuffledAlbums as defaultAlbums, resolveAlbumUrls } from './data/albums'
 import type { Album } from './data/albums'
@@ -31,7 +31,10 @@ export default function App() {
     }
   }, [])
 
-  const allAlbums = [...resolveAlbumUrls(defaultAlbums, API_BASE), ...extraAlbums]
+  const allAlbums = useMemo(
+    () => [...resolveAlbumUrls(defaultAlbums, API_BASE), ...extraAlbums],
+    [extraAlbums],
+  )
 
   const handleSelect = useCallback((album: Album) => {
     setSelectedAlbum(album)

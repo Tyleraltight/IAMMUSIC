@@ -23,6 +23,7 @@ export default function PlayerView({ album, onBack, onPrev, onNext, hasPrev, has
     seek,
     isPlaying,
     isLoading,
+    playbackError,
     currentTime,
     duration,
     analyser,
@@ -30,13 +31,8 @@ export default function PlayerView({ album, onBack, onPrev, onNext, hasPrev, has
 
   const [vinylSize, setVinylSize] = useState(320)
   const [hasAttemptedAutoplay, setHasAttemptedAutoplay] = useState(false)
-  const [detectedBpm, setDetectedBpm] = useState(album.bpm ?? 100)
+  const detectedBpm = album.bpm ?? 100
   const vinylElRef = useRef<HTMLDivElement>(null)
-
-  // Update BPM when album changes
-  useEffect(() => {
-    setDetectedBpm(album.bpm ?? 100)
-  }, [album.bpm])
 
   // BPM → spin duration: scale from ~8s (60 BPM) to ~1.8s (160 BPM)
   const spinDuration = Math.max(1.8, Math.min(8, 960 / detectedBpm))
@@ -203,8 +199,17 @@ export default function PlayerView({ album, onBack, onPrev, onNext, hasPrev, has
         </motion.div>
       )}
 
-      {/* Tap to play hint */}
-      {showPlayHint && (
+      {/* Tap to play hint or Error notice */}
+      {playbackError && !isLoading ? (
+        <motion.p
+          className="mt-2 text-rose-500/80"
+          style={{ fontSize: '8px', letterSpacing: '0.15em' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.8 }}
+        >
+          AUDIO TEMPORARILY UNAVAILABLE
+        </motion.p>
+      ) : showPlayHint ? (
         <motion.p
           className="mt-2"
           style={{ fontSize: '8px', letterSpacing: '0.15em', opacity: 0.4 }}
@@ -214,7 +219,7 @@ export default function PlayerView({ album, onBack, onPrev, onNext, hasPrev, has
         >
           TAP TO PLAY
         </motion.p>
-      )}
+      ) : null}
 
       {/* Album info */}
       <motion.div

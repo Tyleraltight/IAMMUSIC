@@ -5,118 +5,137 @@ export function useAudioPlayer() {
   const analyserRef = useRef<AnalyserNode | null>(null)
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+
   const [isPlaying, setIsPlaying] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
+  const [playbackError, setPlaybackError] = useState<string | null>(null)
 
-  // B3: refs for stop() timers so we can cancel previous ones
   const fadeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const fadeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const initAudio = useCallback(() => {
-    // B4: check for null OR closed state
+  const getOrCreateAudio = useCallback(() => {
+    // 1. Init AudioContext & Analyser
     if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
-      audioContextRef.current = new AudioContext()
-      analyserRef.current = audioContextRef.current.createAnalyser()
-      analyserRef.current.fftSize = 256
-      analyserRef.current.smoothingTimeConstant = 0.8
-      analyserRef.current.connect(audioContextRef.current.destination)
+      const ctx = new AudioContext()
+      const analyser = ctx.createAnalyser()
+      analyser.fftSize = 256
+      analyser.smoothingTimeConstant = 0.8
+      analyser.connect(ctx.destination)
+      audioContextRef.current = ctx
+      analyserRef.current = analyser
     }
     if (audioContextRef.current.state === 'suspended') {
-      audioContextRef.current.resume()
+      audioContextRef.current.resume().catch(() => {})
     }
-  }, [])
 
-  // Stable listener refs for proper cleanup
-  const listenersRef = useRef<{
-    timeupdate: (() => void) | null
-    loadedmetadata: (() => void) | null
-    ended: (() => void) | null
-  }>({ timeupdate: null, loadedmetadata: null, ended: null })
+    // 2. Init persistent Audio element & connect once
+    if (!audioRef.current) {
+      const audio = new Audio()
+      audio.crossOrigin = 'anonymous'
+      audio.preload = 'auto'
+
+      audio.addEventListener('timeupdate', () => {
+        setCurrentTime(audio.currentTime)
+      })
+      audio.addEventListener('loadedmetadata', () => {
+        setDuration(audio.duration || 0)
+        setIsLoading(false)
+      })
+      audio.addEventListener('ended', () => {
+        setIsPlaying(false)
+      })
+      audio.addEventListener('error', () => {
+        console.error('Audio playback error:', audio.error, 'src:', audio.src)
+        setIsLoading(false)
+        setIsPlaying(false)
+        setPlaybackError('Audio unavailable')
+      })
+      audio.addEventListener('waiting', () => {
+        setIsLoading(true)
+      })
+      audio.addEventListener('playing', () => {
+        setIsLoading(false)
+        setIsPlaying(true)
+        setPlaybackError(null)
+      })
+
+      audioRef.current = audio
+
+      try {
+        if (audioContextRef.current && analyserRef.current) {
+          const source = audioContextRef.current.createMediaElementSource(audio)
+          source.connect(analyserRef.current)
+          sourceRef.current = source
+        }
+      } catch (err) {
+        console.warn('Web Audio source binding failed:', err)
+      }
+    }
+
+    return audioRef.current
+  }, [])
 
   const play = useCallback(
     (src: string) => {
-      initAudio()
-
-      // Clean up previous source with proper listener references
-      if (audioRef.current) {
-        audioRef.current.pause()
-        const l = listenersRef.current
-        if (l.timeupdate) audioRef.current.removeEventListener('timeupdate', l.timeupdate)
-        if (l.loadedmetadata) audioRef.current.removeEventListener('loadedmetadata', l.loadedmetadata)
-        if (l.ended) audioRef.current.removeEventListener('ended', l.ended)
+      // Clear any pending fade timer
+      if (fadeIntervalRef.current) {
+        clearInterval(fadeIntervalRef.current)
+        fadeIntervalRef.current = null
       }
-      if (sourceRef.current) {
-        sourceRef.current.disconnect()
+      if (fadeTimeoutRef.current) {
+        clearTimeout(fadeTimeoutRef.current)
+        fadeTimeoutRef.current = null
       }
 
-      const audio = new Audio(src)
-      audio.crossOrigin = 'anonymous'
-      audioRef.current = audio
+      setPlaybackError(null)
+      const audio = getOrCreateAudio()
+
+      // Reset volume & update src
+      audio.volume = 1
+      if (audio.src !== src) {
+        audio.src = src
+        audio.load()
+      }
       setIsLoading(true)
 
-      // Connect to analyser
-      if (audioContextRef.current && analyserRef.current) {
-        sourceRef.current =
-          audioContextRef.current.createMediaElementSource(audio)
-        sourceRef.current.connect(analyserRef.current)
-      }
-
-      const onTimeUpdate = () => setCurrentTime(audio.currentTime)
-      const onLoadedMetadata = () => {
-        setDuration(audio.duration)
+      audio.play().then(() => {
+        setIsPlaying(true)
         setIsLoading(false)
-      }
-      const onEnded = () => setIsPlaying(false)
-      const onError = () => {
-        console.error('Audio load error:', audio.error, 'src:', src)
-        setIsLoading(false)
-        setIsPlaying(false)
-      }
-
-      audio.addEventListener('timeupdate', onTimeUpdate)
-      audio.addEventListener('loadedmetadata', onLoadedMetadata)
-      audio.addEventListener('ended', onEnded)
-      audio.addEventListener('error', onError)
-
-      listenersRef.current = {
-        timeupdate: onTimeUpdate,
-        loadedmetadata: onLoadedMetadata,
-        ended: onEnded,
-      }
-
-      // B5: catch autoplay policy rejections
-      audio.play().catch((err) => {
+      }).catch((err) => {
         console.warn('Audio play rejected:', err)
         setIsPlaying(false)
+        setIsLoading(false)
       })
-      setIsPlaying(true)
     },
-    [initAudio],
+    [getOrCreateAudio],
   )
 
   const toggle = useCallback(() => {
-    if (!audioRef.current) return
+    const audio = audioRef.current
+    if (!audio) return
 
-    if (audioRef.current.paused) {
-      audioRef.current.play().catch(() => {})
-      setIsPlaying(true)
+    if (audio.paused) {
+      audio.volume = 1
+      audio.play().then(() => {
+        setIsPlaying(true)
+      }).catch(() => {})
     } else {
-      audioRef.current.pause()
+      audio.pause()
       setIsPlaying(false)
     }
   }, [])
 
   const seek = useCallback((time: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = time
+    const audio = audioRef.current
+    if (audio) {
+      audio.currentTime = time
       setCurrentTime(time)
     }
   }, [])
 
   const stop = useCallback(() => {
-    // B3: clear any previous fade timers before starting a new one
     if (fadeIntervalRef.current) {
       clearInterval(fadeIntervalRef.current)
       fadeIntervalRef.current = null
@@ -126,8 +145,8 @@ export function useAudioPlayer() {
       fadeTimeoutRef.current = null
     }
 
-    if (audioRef.current) {
-      const audio = audioRef.current
+    const audio = audioRef.current
+    if (audio) {
       fadeIntervalRef.current = setInterval(() => {
         const next = Math.max(0, audio.volume - 0.05)
         if (next > 0.01) {
@@ -157,13 +176,17 @@ export function useAudioPlayer() {
     return () => {
       if (audioRef.current) {
         audioRef.current.pause()
+        audioRef.current.src = ''
+        audioRef.current = null
       }
-      // B4: set ref to null so initAudio() will create a fresh context
+      if (sourceRef.current) {
+        sourceRef.current.disconnect()
+        sourceRef.current = null
+      }
       if (audioContextRef.current) {
-        audioContextRef.current.close()
+        audioContextRef.current.close().catch(() => {})
         audioContextRef.current = null
       }
-      // B3: clear any lingering timers
       if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current)
       if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current)
     }
@@ -176,6 +199,7 @@ export function useAudioPlayer() {
     seek,
     isPlaying,
     isLoading,
+    playbackError,
     currentTime,
     duration,
     analyser: analyserRef,

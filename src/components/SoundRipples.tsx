@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 
 interface SoundRipplesProps {
   analyser: React.RefObject<AnalyserNode | null>
@@ -22,6 +23,7 @@ export default function SoundRipples({
 }: SoundRipplesProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const rafRef = useRef<number>(0)
+  const reducedMotion = useReducedMotion()
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -51,6 +53,20 @@ export default function SoundRipples({
     }
     resizeCanvas()
 
+    // If reduced motion is requested, render a static subtle glow
+    if (reducedMotion) {
+      const w = canvas.width / (window.devicePixelRatio || 1)
+      const h = canvas.height / (window.devicePixelRatio || 1)
+      ctx.clearRect(0, 0, w, h)
+      ctx.beginPath()
+      ctx.arc(w / 2, h / 2, vinylSize / 2 + 10, 0, Math.PI * 2)
+      ctx.fillStyle = 'rgba(253, 191, 247, 0.1)'
+      ctx.fill()
+      return () => {
+        observer.disconnect()
+      }
+    }
+
     // BPM → timing
     const beatDuration = 60000 / bpm  // ms per beat
     const beatThreshold = beatDuration * 0.5  // min ms between beats
@@ -64,7 +80,7 @@ export default function SoundRipples({
     let smoothBassEnergy = 0
     const beatIntervals: number[] = []
 
-    const draw = (_timestamp: number) => {
+    const draw = () => {
       const w = canvas.width / (window.devicePixelRatio || 1)
       const h = canvas.height / (window.devicePixelRatio || 1)
       const centerX = w / 2
@@ -78,7 +94,7 @@ export default function SoundRipples({
       ctx.clearRect(0, 0, w, h)
 
       // ── Audio analysis ────────────────────────────────
-      let bassEnergy = 0
+      let bassEnergy: number
       const currentAnalyser = analyser.current
 
       if (isPlaying && currentAnalyser) {
@@ -181,7 +197,7 @@ export default function SoundRipples({
       cancelAnimationFrame(rafRef.current)
       observer.disconnect()
     }
-  }, [analyser, isPlaying, vinylSize, bpm])
+  }, [analyser, isPlaying, vinylSize, bpm, reducedMotion])
 
   return (
     <canvas
